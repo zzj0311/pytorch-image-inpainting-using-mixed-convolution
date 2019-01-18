@@ -39,7 +39,7 @@ python modelTrain.py -f
 ```
 python modelTest.py
 ```
-* There's three models I have [trained](http://itwillsoonuploaded.com/sooooooooon) and tested. All the models are in same U-NET archetecture and trained with same loss function. The only difference is that GConv uses all gated convolution, PConv uses all partial convolution while mixed (which is the proposed one) uses two layers of gated convolution to learn the mask and remain others to be partial convolution to reduce parameters. More detailed information can be seen in the paper I will upload days after.
+* There's three models I have [trained](https://pan.baidu.com/s/1YTK46whMRGBLAPrZN0PCaA) and tested. All the models are in same U-NET archetecture and trained with same loss function. The only difference is that GConv uses all gated convolution, PConv uses all partial convolution while mixed (which is the proposed one) uses two layers of gated convolution to learn the mask and remain others to be partial convolution to reduce parameters. More detailed information can be seen in the paper I will upload days after.
 
 ## Some sample results
 From left to right: input, PConv, GConv, Mixed, GT. The result is trained on 18k images for 100 epoches and 200 epoches of fine-tuning, with a batch size of 16
