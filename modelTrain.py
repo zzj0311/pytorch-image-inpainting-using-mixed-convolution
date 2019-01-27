@@ -15,16 +15,15 @@ parser.add_argument('--save_dir', '-d', type=str, default='./modelSave')
 parser.add_argument('--log_dir', type=str, default='./log.txt')
 parser.add_argument('--lr', type=float, default=2e-4)
 parser.add_argument('--lr_finetune', type=float, default=5e-5)
-parser.add_argument('--hole_scale', type=int, default=6)
 parser.add_argument('--epoch', '-e', type=int, default=100)
-parser.add_argument('--batch_size', '-b', type=int, default=16)
+parser.add_argument('--batch_size', '-b', type=int, default=1)
 parser.add_argument('--n_threads', '-n', type=int, default=16)
 parser.add_argument('--interval', '-I', type=int, default=50)
 parser.add_argument('--image_size', type=int, default=256)
 parser.add_argument('--resume', '-r', type=str, default=None)
 parser.add_argument('--finetune', '-f', action='store_true')
 parser.add_argument('--device', '-i', type=str, default='0')
-parser.add_argument('--model_tag', '-t', type=str, default='pconv1')
+parser.add_argument('--model_tag', '-t', type=str, default='pconv')
 args = parser.parse_args()
 
 logging.basicConfig(level=0,\
@@ -32,6 +31,10 @@ logging.basicConfig(level=0,\
                     datefmt='%a, %d %b %Y %H:%M:%S',\
                     filename=args.log_dir,\
                     filemode="a+")
+
+if not os.path.exists(args.save_dir):
+    os.makedirs('{:s}/images'.format(args.save_dir))
+    os.makedirs('{:s}/ckpt'.format(args.save_dir))
 
 paths = pickle.load(open(args.dset_path, 'rb'))
 dSet_mean = paths['mean']
@@ -42,7 +45,7 @@ img_tf = [T.Resize( size=( args.image_size, args.image_size ) ), T.ToTensor(), T
 mask_tf = [T.ToTensor()]
 
 dataset_train = celebA(args.dset_path, img_tf, mask_tf)
-dataset_val = celebA(args.dset_path, img_tf, mask_tf, train='val', maskPathFile=args.mask_path)
+dataset_val = celebA(args.dset_path, img_tf, mask_tf, train='val', maskDumpFile=args.mask_path)
 dataset_test = celebA(args.dset_path, img_tf, mask_tf, train='test')
 
 dSet_len = len(dataset_train)
@@ -67,7 +70,7 @@ if args.finetune:
 else:
     lr = args.lr
 loss_config = {'valid': 1.0, \
-                'hole': args.hole_scale, \
+                'hole': 6.0, \
                 'tv': 0.1, \
                 'prc': 0.05, \
                 'style': 120.0 \

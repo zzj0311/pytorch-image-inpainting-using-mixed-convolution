@@ -7,10 +7,10 @@ import numpy as np
 import cv2
 import random
 
-def random_ff_mask(configDict=None):
+def random_ff_mask(configDict=None, size = (256, 256)):
     """
     Generate a random free form mask according to "Free-Form Image Inpainting with Gated Convolution".
-    With default setting, around 1/5 is covered by mask.
+    With default setting, around 1/5 is covered by mask, on average.
 
     Args:
         a dict of mask config with following attrs:
@@ -20,6 +20,7 @@ def random_ff_mask(configDict=None):
         -- bWid: brush width range
         -- angle: angle change in rad range
         -- cnt: num of traces range
+        size -- tuple of expected mask size
 
     Returns:
         np.ndarray random free form mask
@@ -55,17 +56,17 @@ def random_ff_mask(configDict=None):
             cv2.line(mask, (start_y, start_x), (end_y, end_x), 1.0, brush_w)
             start_x, start_y = end_x, end_y
 
+    mask = cv2.resize(mask, size, cv2.INTER_NEAREST)
     return mask.reshape(mask.shape+(1,)).astype('uint8') * 255
-#    return mask.astype('uint8') * 255
 
 class celebA(data.Dataset):
-    
-    def __init__(self, pathFile, img_transform, mask_transform, maskPathFile=None, train='train', mask_config=None):
+    def __init__(self, pathFile, img_transform, mask_transform, maskDumpFile=None, train='train', mask_config=None, size=(256, 256)):
         super().__init__()
         self.img_transform = img_transform
         self.mask_transform = mask_transform
         self.train = train
         self.mask_config = mask_config
+        self.size = size
 
         filePathDict = pickle.load(open(pathFile, "rb"))
         if self.train == 'train':
@@ -74,9 +75,9 @@ class celebA(data.Dataset):
         elif self.train == 'test':
             self.paths = filePathDict['test']
             self.maskList = None
-        elif self.train == 'val' and maskPathFile != None:
+        elif self.train == 'val' and maskDumpFile != None:
             self.paths = filePathDict['train']
-            self.maskList = pickle.load(open(maskPathFile, "rb"))
+            self.maskList = pickle.load(open(maskDumpFile, "rb"))
         else:
             raise("DsetTagError")
 
@@ -84,9 +85,9 @@ class celebA(data.Dataset):
         gt = Image.open(self.paths[index])
         gt = T.Compose(self.img_transform)(gt.convert('RGB'))
         if self.train == 'train' or self.train == 'test' or self.maskList == None:
-            mask = random_ff_mask(self.mask_config)
+            mask = random_ff_mask(self.mask_config, self.size)
         else:
-            mask = self.maskList[index % 16]
+            mask = cv2.resize(self.maskList[index % 16], self.size, cv2.INTER_NEAREST)
         mask = T.Compose(self.mask_transform)(255-mask)
         return gt * mask, mask, gt
         
