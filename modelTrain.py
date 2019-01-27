@@ -44,9 +44,9 @@ device = torch.device('cuda:{}'.format(args.device))
 img_tf = [T.Resize( size=( args.image_size, args.image_size ) ), T.ToTensor(), T.Normalize(mean=dSet_mean, std=dSet_std)]
 mask_tf = [T.ToTensor()]
 
-dataset_train = celebA(args.dset_path, img_tf, mask_tf)
-dataset_val = celebA(args.dset_path, img_tf, mask_tf, train='val', maskDumpFile=args.mask_path)
-dataset_test = celebA(args.dset_path, img_tf, mask_tf, train='test')
+dataset_train = celebA(args.dset_path, img_tf, mask_tf, size=( args.image_size, args.image_size ))
+dataset_val = celebA(args.dset_path, img_tf, mask_tf, train='val', maskDumpFile=args.mask_path, size=( args.image_size, args.image_size ))
+dataset_test = celebA(args.dset_path, img_tf, mask_tf, train='test', size=( args.image_size, args.image_size ))
 
 dSet_len = len(dataset_train)
 print((dSet_std, dSet_mean))
