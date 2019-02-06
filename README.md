@@ -13,7 +13,7 @@ A re-implementation and modification of 'Image Inpainting for Irregular Holes Us
 
 * Make sure your Pytorch version is 0.4.1+, it won't work otherwise. The code is fully tested under version 0.4.1 and there maybe some memory [issues](https://github.com/pytorch/pytorch/issues/15774) under 1.0.0. While the cause has not been found yet, it's not guaranteed that it can work properly.
 
-* ~~For now, the input image size is restricted to (256, 256) as I hard coded the mask generation parameters. This issue would be fixed once I feel boring :)~~ It should now support arbitaray input size.
+* ~~For now, the input image size is restricted to (256, 256) as I hard coded the mask generation parameters. This issue would be fixed once I feel boring :)~~ It should now support arbitrary input size.
 
 * To run the model, you first have to run sampler.py to generate the training & testing split. (the dataset I used is also provided in case you are as lazy as me.)
 
